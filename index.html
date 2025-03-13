@@ -1,0 +1,62 @@
+
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEXT TRANSLATION</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="root">
+        <h2>Text Translation
+          (use only words: hello,good morning,goodbye)
+        </h2>
+     
+        <input id="text-input" type="text" placeholder="Enter text">
+        <select id="language-select">
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+        </select>
+        <button id="translate-button">Translate</button>
+        <p id="translated-text"></p>
+
+        <h3>Translation History</h3>
+        <ul id="history-list"></ul>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('text-input');
+        const languageSelect = document.getElementById('language-select');
+        const translateButton = document.getElementById('translate-button');
+        const translatedTextElement = document.getElementById('translated-text');
+        const historyList = document.getElementById('history-list');
+
+        translateButton.addEventListener('click', async () => {
+            const text = textInput.value.trim();
+            const language = languageSelect.value;
+
+            if (!text) return;
+
+            try {
+                const response = await axios.post("http://localhost:5000/translate", {
+                    text,
+                    language
+                });
+
+                const translatedText = response.data.translatedText;
+                translatedTextElement.innerText = `Translated: ${translatedText}`;
+
+                // Update history
+                const listItem = document.createElement("li");
+                listItem.textContent = `${text} → ${translatedText} (${language})`;
+                historyList.appendChild(listItem);
+            } catch (error) {
+                console.error("Translation failed", error);
+                translatedTextElement.innerText = "Error: Unable to translate";
+            }
+        });
+    </script>
+</body>
+</html>
